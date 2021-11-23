@@ -1,8 +1,9 @@
 package champollion;
+import java.util.*;
 
 public class Enseignant extends Personne {
-
-    // TODO : rajouter les autres méthodes présentes dans le diagramme UML
+    
+    private final List<ServicePrevu> service = new ArrayList<>();    
 
     public Enseignant(String nom, String email) {
         super(nom, email);
@@ -17,8 +18,13 @@ public class Enseignant extends Personne {
      *
      */
     public int heuresPrevues() {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+       int heures = 0;
+       Iterator<ServicePrevu> it =  service.iterator();
+       while(it.hasNext()){
+            ServicePrevu s=it.next();
+            heures += (int) (s.getVolumeCM()*1.5 + s.getVolumeTD() + s.getVolumeTP()*0.75);
+       }
+       return heures;
     }
 
     /**
@@ -31,8 +37,7 @@ public class Enseignant extends Personne {
      *
      */
     public int heuresPrevuesPourUE(UE ue) {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        return (int) (ue.getHeuresCM()*1.5 + ue.getHeuresTD() + ue.getHeuresTP()*0.5);
     }
 
     /**
@@ -44,8 +49,15 @@ public class Enseignant extends Personne {
      * @param volumeTP le volume d'heures de TP
      */
     public void ajouteEnseignement(UE ue, int volumeCM, int volumeTD, int volumeTP) {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+           ue.getIntitule();
+           ServicePrevu s = new ServicePrevu(volumeCM,volumeTD,volumeTP);
+           service.add(s);
+           }
+    
+    public boolean estEnSousService(){
+            if (heuresPrevues() < 192){
+                return true;
+            }
+            return false;
+        } 
     }
-
-}
