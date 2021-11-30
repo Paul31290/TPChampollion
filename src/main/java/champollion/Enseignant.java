@@ -3,7 +3,8 @@ import java.util.*;
 
 public class Enseignant extends Personne {
     
-    private final List<ServicePrevu> service = new ArrayList<>();    
+    private final List<ServicePrevu> listService = new LinkedList<>();   
+    private final Set<Intervention> listIntervention = new HashSet<>();
 
     public Enseignant(String nom, String email) {
         super(nom, email);
@@ -19,7 +20,7 @@ public class Enseignant extends Personne {
      */
     public int heuresPrevues() {
        int heures = 0;
-       Iterator<ServicePrevu> it =  service.iterator();
+       Iterator<ServicePrevu> it =  listService.iterator();
        while(it.hasNext()){
             ServicePrevu s=it.next();
             heures += (int) (s.getVolumeCM()*1.5 + s.getVolumeTD() + s.getVolumeTP()*0.75);
@@ -37,7 +38,13 @@ public class Enseignant extends Personne {
      *
      */
     public int heuresPrevuesPourUE(UE ue) {
-        return (int) (ue.getHeuresCM()*1.5 + ue.getHeuresTD() + ue.getHeuresTP()*0.5);
+        int somme = 0;
+        for(ServicePrevu s : listService){
+            if(s.getUe() == ue){
+                somme += (int) (s.getVolumeCM()*1.5 + s.getVolumeTD() + s.getVolumeTP()*0.75);
+            }
+        }
+        return somme;
     }
 
     /**
@@ -49,15 +56,42 @@ public class Enseignant extends Personne {
      * @param volumeTP le volume d'heures de TP
      */
     public void ajouteEnseignement(UE ue, int volumeCM, int volumeTD, int volumeTP) {
-           ue.getIntitule();
-           ServicePrevu s = new ServicePrevu(volumeCM,volumeTD,volumeTP);
-           service.add(s);
-           }
-    
+        listService.add(new ServicePrevu(volumeCM,volumeTD,volumeTP,ue,this));        
+    }
+        
+        
     public boolean estEnSousService(){
             if (heuresPrevues() < 192){
                 return true;
             }
             return false;
-        } 
     }
+    
+    public void ajouteIntervention(Intervention inter){
+            listIntervention.add(inter);
+    }
+    
+    public int resteAPlanifier(UE ue, TypeIntervention type){
+        int sommePlanifier = 0;
+        
+        for(Intervention inter : listIntervention){
+            if (inter.getTypeIntervention().equals(type) && inter.getUe().equals(ue)){
+                sommePlanifier += inter.getDuree();
+            }
+        }
+        
+        for(ServicePrevu s : listService){
+           if(s.getUe().equals(ue)){
+               switch (type){
+                   case TP: sommePlanifier -= s.getVolumeTP();
+                   case TD: sommePlanifier -= s.getVolumeTD();
+                   case CM: sommePlanifier -= s.getVolumeCM();
+                   break;
+               }
+           } 
+        }
+           
+        return (int) sommePlanifier;
+        
+    }
+}
