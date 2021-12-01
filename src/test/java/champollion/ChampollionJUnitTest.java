@@ -5,6 +5,7 @@ import static champollion.TypeIntervention.TD;
 import static champollion.TypeIntervention.CM;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.*;
 
 public class ChampollionJUnitTest {
 	Enseignant untel;
@@ -16,9 +17,9 @@ public class ChampollionJUnitTest {
 		untel = new Enseignant("untel", "untel@gmail.com");
 		uml = new UE("UML");
 		java = new UE("Programmation en java");
-                interTP = new Intervention(TP);
-                interTD = new Intervention(TD);
-                interCM = new Intervention(CM);
+                interTP = new Intervention(TP, uml, 30);
+                interTD = new Intervention(TD, uml, 10);
+                interCM = new Intervention(CM, uml, 10);
 	}
 	
 
@@ -66,18 +67,28 @@ public class ChampollionJUnitTest {
             assertFalse(untel.estEnSousService(),
                 "L'enseignant untel ne doit pas être en sous-service");
         }
-        /*@Test
-        public void testAjoutIntervention(){
-            untel.ajouteIntervention(interTP);
+        @Test
+        public void TestVerifierTypeIntervention(){
+            ServicePrevu s = new ServicePrevu(10,5,20,uml,untel);
             
-            assertSame(),
-                "L'enseignant untel ne doit pas être en sous-service");
-        }*/
+            assertTrue(s.getUe().equals(uml),
+                "L'UE rentrée est la bonne");
+        }
         
         @Test
-        public void testResteAPlanifier(){
+        public void testAjoutEtResteAPlanifier(){
             int sommePlanifier = 0;
+            untel.ajouteEnseignement(uml, 0, 0, 20);
+            
+            
             assertEquals(0, sommePlanifier,
                 "la planification initiale doit être egale à 0");
+            
+            untel.ajouteIntervention(interTP);
+            assertEquals(10, untel.resteAPlanifier(uml, TP),
+                "Le nombre d'heures de TP restant à planifier est bon");
+            
         }
+            
+            
 }
